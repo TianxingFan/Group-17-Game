@@ -3,36 +3,36 @@ using System.Collections;
 
 public class SlimeController : MonoBehaviour
 {
-    // »ù´¡ÊôĞÔ  
-    public float moveSpeed = 2f;             // Ñ²ÂßÒÆ¶¯ËÙ¶È  
-    public float chaseSpeed = 3f;            // ×·»÷ÒÆ¶¯ËÙ¶È  
-    public float fleeSpeed = 4f;             // ÌÓÅÜÒÆ¶¯ËÙ¶È  
-    public float detectionRange = 5f;        // ¼ì²âÍæ¼ÒµÄ·¶Î§  
-    public float attackRange = 1f;           // ¹¥»÷·¶Î§  
-    public float attackCooldown = 2f;        // ¹¥»÷ÀäÈ´Ê±¼ä  
-    public int damage = 10;                  // ¶ÔÍæ¼ÒÔì³ÉµÄÉËº¦  
-    public float maxHealth = 100f;           // ×î´óÉúÃüÖµ  
-    public float fleeHealthThreshold = 20f;  // ¿ªÊ¼ÌÓÅÜµÄÉúÃüÖµãĞÖµ  
+    // åŸºç¡€å±æ€§  
+    public float moveSpeed = 2f;             // å·¡é€»ç§»åŠ¨é€Ÿåº¦  
+    public float chaseSpeed = 3f;            // è¿½å‡»ç§»åŠ¨é€Ÿåº¦  
+    public float fleeSpeed = 4f;             // é€ƒè·‘ç§»åŠ¨é€Ÿåº¦  
+    public float detectionRange = 5f;        // æ£€æµ‹ç©å®¶çš„èŒƒå›´  
+    public float attackRange = 1f;           // æ”»å‡»èŒƒå›´  
+    public float attackCooldown = 2f;        // æ”»å‡»å†·å´æ—¶é—´  
+    public int damage = 10;                  // å¯¹ç©å®¶é€ æˆçš„ä¼¤å®³  
+    public float maxHealth = 100f;           // æœ€å¤§ç”Ÿå‘½å€¼  
+    public float fleeHealthThreshold = 20f;  // å¼€å§‹é€ƒè·‘çš„ç”Ÿå‘½å€¼é˜ˆå€¼  
 
-    // ÒıÓÃ  
-    private Transform player;                // Íæ¼Ò  
-    public LayerMask playerLayer;            // Íæ¼Ò²ã  
-    public Transform[] patrolPoints;         // Ñ²Âßµã  
-    private int currentPatrolIndex = 0;      // µ±Ç°Ñ²ÂßµãË÷Òı  
+    // å¼•ç”¨  
+    private Transform player;                // ç©å®¶  
+    public LayerMask playerLayer;            // ç©å®¶å±‚  
+    public Transform[] patrolPoints;         // å·¡é€»ç‚¹  
+    private int currentPatrolIndex = 0;      // å½“å‰å·¡é€»ç‚¹ç´¢å¼•  
 
-    // ¶¯»­ºÍÎïÀí  
-    private Animator animator;               // Animator ×é¼ş  
-    private Rigidbody2D rb;                  // Rigidbody2D ×é¼ş  
-    private float attackTimer = 0f;          // ¹¥»÷¼ÆÊ±Æ÷  
-    private bool isDead = false;             // ÊÇ·ñÒÑËÀÍö  
+    // åŠ¨ç”»å’Œç‰©ç†  
+    private Animator animator;               // Animator ç»„ä»¶  
+    private Rigidbody2D rb;                  // Rigidbody2D ç»„ä»¶  
+    private float attackTimer = 0f;          // æ”»å‡»è®¡æ—¶å™¨  
+    private bool isDead = false;             // æ˜¯å¦å·²æ­»äº¡  
 
-    // ÉúÃüÖµ  
+    // ç”Ÿå‘½å€¼  
     private float currentHealth;
 
-    // ¶¨Òå Slime µÄ AI ×´Ì¬  
+    // å®šä¹‰ Slime çš„ AI çŠ¶æ€  
     private enum SlimeState
     {
-        Idle,
+        Idle,//æ— é™æ­¢åŠ¨ç”»
         Patrol,
         Chase,
         Attack,
@@ -41,23 +41,23 @@ public class SlimeController : MonoBehaviour
         Death
     }
 
-    private SlimeState currentState;         // µ±Ç°×´Ì¬  
+    private SlimeState currentState;         // å½“å‰çŠ¶æ€  
 
     void Awake()
     {
-        currentHealth = maxHealth;           // ³õÊ¼»¯ÉúÃüÖµ  
-        animator = GetComponent<Animator>(); // »ñÈ¡ Animator  
-        rb = GetComponent<Rigidbody2D>();    // »ñÈ¡ Rigidbody2D  
+        currentHealth = maxHealth;           // åˆå§‹åŒ–ç”Ÿå‘½å€¼  
+        animator = GetComponent<Animator>(); // è·å– Animator  
+        rb = GetComponent<Rigidbody2D>();    // è·å– Rigidbody2D  
 
-        // ¼ì²é²¢³õÊ¼»¯Ñ²Âßµã  
+        // æ£€æŸ¥å¹¶åˆå§‹åŒ–å·¡é€»ç‚¹  
         if (patrolPoints == null || patrolPoints.Length == 0)
         {
-            Debug.LogError("Ñ²ÂßµãÊı×éÎ´ÉèÖÃ»òÎª¿Õ£¬ÇëÔÚInspectorÖĞÉèÖÃÑ²Âßµã¡£");
+            Debug.LogError("å·¡é€»ç‚¹æ•°ç»„æœªè®¾ç½®æˆ–ä¸ºç©ºï¼Œè¯·åœ¨Inspectorä¸­è®¾ç½®å·¡é€»ç‚¹ã€‚");
             currentState = SlimeState.Idle;
             return;
         }
 
-        // ÕÒµ½×î½üµÄÑ²Âßµã  
+        // æ‰¾åˆ°æœ€è¿‘çš„å·¡é€»ç‚¹  
         float closestDistance = float.MaxValue;
         int closestIndex = 0;
 
@@ -72,7 +72,7 @@ public class SlimeController : MonoBehaviour
         }
 
         currentPatrolIndex = closestIndex;
-        currentState = SlimeState.Patrol;    // ³õÊ¼×´Ì¬ÎªÑ²Âß  
+        currentState = SlimeState.Patrol;    // åˆå§‹çŠ¶æ€ä¸ºå·¡é€»  
     }
 
     void Update()
@@ -80,32 +80,32 @@ public class SlimeController : MonoBehaviour
         if (isDead)
             return;
 
-        attackTimer += Time.deltaTime;       // ¸üĞÂ¹¥»÷¼ÆÊ±Æ÷  
-        UpdateState();                       // ¸üĞÂ×´Ì¬  
-        HandleStateActions();                // Ö´ĞĞ×´Ì¬ĞĞÎª  
+        attackTimer += Time.deltaTime;       // æ›´æ–°æ”»å‡»è®¡æ—¶å™¨  
+        UpdateState();                       // æ›´æ–°çŠ¶æ€  
+        HandleStateActions();                // æ‰§è¡ŒçŠ¶æ€è¡Œä¸º  
     }
 
-    // ¸üĞÂµ±Ç°×´Ì¬  
+    // æ›´æ–°å½“å‰çŠ¶æ€  
     void UpdateState()
     {
-        // ¼ì²âÍæ¼Ò  
+        // æ£€æµ‹ç©å®¶  
         Collider2D playerCollider = Physics2D.OverlapCircle(transform.position, detectionRange, playerLayer);
         if (playerCollider != null)
         {
             player = playerCollider.transform;
 
-            if (currentHealth <= fleeHealthThreshold)     // ÉúÃüÖµµÍÓÚãĞÖµ£¬ÌÓÅÜ  
+            if (currentHealth <= fleeHealthThreshold)     // ç”Ÿå‘½å€¼ä½äºé˜ˆå€¼ï¼Œé€ƒè·‘  
             {
                 currentState = SlimeState.Flee;
             }
             else
             {
                 float distanceToPlayer = Vector2.Distance(transform.position, player.position);
-                if (distanceToPlayer <= attackRange)      // ÔÚ¹¥»÷·¶Î§ÄÚ£¬¹¥»÷  
+                if (distanceToPlayer <= attackRange)      // åœ¨æ”»å‡»èŒƒå›´å†…ï¼Œæ”»å‡»  
                 {
                     currentState = SlimeState.Attack;
                 }
-                else                                      // ·ñÔò£¬×·»÷  
+                else                                      // å¦åˆ™ï¼Œè¿½å‡»  
                 {
                     currentState = SlimeState.Chase;
                 }
@@ -117,12 +117,12 @@ public class SlimeController : MonoBehaviour
 
             if (currentState != SlimeState.Patrol && currentState != SlimeState.Idle)
             {
-                currentState = SlimeState.Patrol;         // Íæ¼ÒÀë¿ª£¬·µ»ØÑ²Âß  
+                currentState = SlimeState.Patrol;         // ç©å®¶ç¦»å¼€ï¼Œè¿”å›å·¡é€»  
             }
         }
     }
 
-    // ¸ù¾İµ±Ç°×´Ì¬Ö´ĞĞÏàÓ¦ĞĞÎª  
+    // æ ¹æ®å½“å‰çŠ¶æ€æ‰§è¡Œç›¸åº”è¡Œä¸º  
     void HandleStateActions()
     {
         switch (currentState)
@@ -140,7 +140,7 @@ public class SlimeController : MonoBehaviour
                 break;
 
             case SlimeState.Attack:
-                ChasePlayer(); // ¼ÌĞø¿¿½üÍæ¼Ò  
+                ChasePlayer(); // ç»§ç»­é è¿‘ç©å®¶  
                 break;
 
             case SlimeState.Flee:
@@ -148,26 +148,26 @@ public class SlimeController : MonoBehaviour
                 break;
 
             case SlimeState.Hurt:
-                // Èç¹ûĞèÒª£¬Ìí¼ÓÊÜÉËºóµÄÂß¼­  
+                // å¦‚æœéœ€è¦ï¼Œæ·»åŠ å—ä¼¤åçš„é€»è¾‘  
                 break;
 
             case SlimeState.Death:
-                // ËÀÍöÒÑÔÚ Die() ·½·¨ÖĞ´¦Àí  
+                // æ­»äº¡å·²åœ¨ Die() æ–¹æ³•ä¸­å¤„ç†  
                 break;
         }
     }
 
-    // Idle ×´Ì¬ĞĞÎª  
+    // Idle çŠ¶æ€è¡Œä¸º  
     void Idle()
     {
         rb.velocity = Vector2.zero;
-        // ±£³Ö Idle ¶¯»­  
+        // ä¿æŒ Idle åŠ¨ç”»  
     }
 
-    // Patrol ×´Ì¬ĞĞÎª  
+    // Patrol çŠ¶æ€è¡Œä¸º  
     void Patrol()
     {
-        if (patrolPoints.Length == 0)
+        if (patrolPoints.Length == 0)//å·¡é€»ç‚¹è·ç¦»
         {
             currentState = SlimeState.Idle;
             return;
@@ -176,10 +176,10 @@ public class SlimeController : MonoBehaviour
         Transform targetPoint = patrolPoints[currentPatrolIndex];
         Vector2 direction = ((Vector2)targetPoint.position - rb.position);
 
-        if (direction.sqrMagnitude < 0.1f) // µ½´ïÄ¿±êµã  
+        if (direction.sqrMagnitude < 0.1f) // åˆ°è¾¾ç›®æ ‡ç‚¹  
         {
             currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Length;
-            rb.velocity = Vector2.zero; // Í£Ö¹ÒÆ¶¯  
+            rb.velocity = Vector2.zero; // åœæ­¢ç§»åŠ¨  
             return;
         }
 
@@ -188,7 +188,7 @@ public class SlimeController : MonoBehaviour
         FaceDirection(direction);
     }
 
-    // Chase ×´Ì¬ĞĞÎª  
+    // Chase çŠ¶æ€è¡Œä¸º  
     void ChasePlayer()
     {
         if (player == null)
@@ -202,7 +202,7 @@ public class SlimeController : MonoBehaviour
         FaceDirection(direction);
     }
 
-    // Flee ×´Ì¬ĞĞÎª  
+    // Flee çŠ¶æ€è¡Œä¸º  
     void FleeFromPlayer()
     {
         if (player == null)
@@ -216,7 +216,7 @@ public class SlimeController : MonoBehaviour
         FaceDirection(direction);
     }
 
-    // ÊÜÉË´¦Àí  
+    // å—ä¼¤å¤„ç†  
     public void TakeDamage(float damage)
     {
         if (isDead) return;
@@ -225,7 +225,7 @@ public class SlimeController : MonoBehaviour
 
         if (animator != null)
         {
-            animator.SetTrigger("Hit"); // ´¥·¢ÊÜ»÷¶¯»­  
+            animator.SetTrigger("Hit"); // è§¦å‘å—å‡»åŠ¨ç”»  
         }
 
         if (currentHealth <= 0)
@@ -235,11 +235,11 @@ public class SlimeController : MonoBehaviour
         else
         {
             currentState = SlimeState.Hurt;
-            // Èç¹ûĞèÒª£¬Ìí¼ÓÊÜÉËºóµÄÂß¼­  
+            // å¦‚æœéœ€è¦ï¼Œæ·»åŠ å—ä¼¤åçš„é€»è¾‘  
         }
     }
 
-    // ËÀÍö´¦Àí  
+    // æ­»äº¡å¤„ç†  
     void Die()
     {
         if (isDead) return;
@@ -248,11 +248,11 @@ public class SlimeController : MonoBehaviour
 
         if (animator != null)
         {
-            animator.SetTrigger("Die"); // ´¥·¢ËÀÍö¶¯»­  
+            animator.SetTrigger("Die"); // è§¦å‘æ­»äº¡åŠ¨ç”»  
         }
 
         rb.velocity = Vector2.zero;
-        rb.isKinematic = true; // ·ÀÖ¹ËÀÍöºó¼ÌĞøÊÜµ½ÎïÀíÓ°Ïì  
+        rb.isKinematic = true; // é˜²æ­¢æ­»äº¡åç»§ç»­å—åˆ°ç‰©ç†å½±å“  
 
         Collider2D collider = GetComponent<Collider2D>();
         if (collider != null)
@@ -260,7 +260,7 @@ public class SlimeController : MonoBehaviour
             collider.enabled = false;
         }
 
-        // ½ûÓÃÆäËû½Å±¾  
+        // ç¦ç”¨å…¶ä»–è„šæœ¬  
         MonoBehaviour[] scripts = GetComponents<MonoBehaviour>();
         foreach (MonoBehaviour script in scripts)
         {
@@ -270,7 +270,7 @@ public class SlimeController : MonoBehaviour
             }
         }
 
-        // Æô¶¯Ğ­³ÌµÈ´ıËÀÍö¶¯»­²¥·ÅÍê±Ï  
+        // å¯åŠ¨åç¨‹ç­‰å¾…æ­»äº¡åŠ¨ç”»æ’­æ”¾å®Œæ¯•  
         StartCoroutine(DeathSequence());
     }
 
@@ -278,22 +278,22 @@ public class SlimeController : MonoBehaviour
     {
         AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
 
-        // µÈ´ı½øÈëËÀÍö¶¯»­×´Ì¬  
+        // ç­‰å¾…è¿›å…¥æ­»äº¡åŠ¨ç”»çŠ¶æ€  
         while (!stateInfo.IsName("Die"))
         {
             yield return null;
             stateInfo = animator.GetCurrentAnimatorStateInfo(0);
         }
 
-        // µÈ´ıËÀÍö¶¯»­²¥·ÅÍê±Ï  
+        // ç­‰å¾…æ­»äº¡åŠ¨ç”»æ’­æ”¾å®Œæ¯•  
         float animationLength = stateInfo.length;
         yield return new WaitForSeconds(animationLength);
 
-        // Ïú»ÙÓÎÏ·¶ÔÏó  
+        // é”€æ¯æ¸¸æˆå¯¹è±¡  
         Destroy(gameObject);
     }
 
-    // Åö×²¼ì²â£¬ÓÃÓÚ¹¥»÷Íæ¼Ò  
+    // ç¢°æ’æ£€æµ‹ï¼Œç”¨äºæ”»å‡»ç©å®¶  
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.collider.CompareTag("Player") && attackTimer >= attackCooldown)
@@ -306,33 +306,33 @@ public class SlimeController : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("Åö×²µ½µÄÍæ¼ÒÃ»ÓĞ PlayerHealth ×é¼ş¡£");
+                Debug.LogWarning("ç¢°æ’åˆ°çš„ç©å®¶æ²¡æœ‰ PlayerHealth ç»„ä»¶ã€‚");
             }
         }
     }
 
-    // ¿ÉÊÓ»¯¼ì²â·¶Î§  
+    // å¯è§†åŒ–æ£€æµ‹èŒƒå›´  
     private void OnDrawGizmosSelected()
     {
-        // »æÖÆ¼ì²â·¶Î§  
+        // ç»˜åˆ¶æ£€æµ‹èŒƒå›´  
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, detectionRange);
 
-        // »æÖÆ¹¥»÷·¶Î§  
+        // ç»˜åˆ¶æ”»å‡»èŒƒå›´  
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 
-    // ÃæÏòÒÆ¶¯·½ÏòµÄ·½·¨  
+    // é¢å‘ç§»åŠ¨æ–¹å‘çš„æ–¹æ³•  
     void FaceDirection(Vector2 direction)
     {
         if (direction.x > 0)
         {
-            transform.localScale = new Vector3(1, 1, 1); // ÃæÏòÓÒ  
+            transform.localScale = new Vector3(1, 1, 1); // é¢å‘å³  
         }
         else if (direction.x < 0)
         {
-            transform.localScale = new Vector3(-1, 1, 1); // ÃæÏò×ó  
+            transform.localScale = new Vector3(-1, 1, 1); // é¢å‘å·¦  
         }
     }
 }
